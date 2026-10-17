@@ -108,7 +108,7 @@ export const AvatarPickerModal: React.FC<AvatarPickerModalProps> = ({
           <div>
             <div className="flex items-center justify-between mb-2">
               <label className="font-heading font-semibold text-sm text-slate-700">
-                Choisis ton avatar « Qui est-ce ? »
+                Choisis ton avatar
               </label>
               <span className="text-xs text-purple-600 font-semibold bg-purple-50 px-2 py-0.5 rounded-full">
                 {PRESET_AVATARS.length} personnages

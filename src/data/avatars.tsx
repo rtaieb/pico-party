@@ -137,25 +137,53 @@ export const PRESET_AVATARS: PresetAvatar[] = [
     svg: (className = 'w-full h-full') => (
       <svg viewBox="0 0 100 110" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
         <rect width="100" height="110" fill="#f0fbf7" />
-        {/* Body */}
-        <path d="M24 110 C28 87 40 86 50 86 C60 86 72 87 76 110 Z" fill="#00b894" />
-        {/* Big Afro Hair */}
-        <circle cx="50" cy="50" r="30" fill="#2d3436" />
-        <circle cx="30" cy="40" r="12" fill="#2d3436" />
-        <circle cx="70" cy="40" r="12" fill="#2d3436" />
-        <circle cx="50" cy="28" r="14" fill="#2d3436" />
+        {/* Hair Back / Space Buns */}
+        <circle cx="26" cy="28" r="13" fill="#2d231e" />
+        <circle cx="21" cy="24" r="6" fill="#3d302a" />
+        <circle cx="74" cy="28" r="13" fill="#2d231e" />
+        <circle cx="79" cy="24" r="6" fill="#3d302a" />
+        {/* Scrunchies */}
+        <ellipse cx="32" cy="34" rx="7" ry="4" transform="rotate(-35 32 34)" fill="#fdcb6e" />
+        <ellipse cx="68" cy="34" rx="7" ry="4" transform="rotate(35 68 34)" fill="#fdcb6e" />
+        {/* Hair Base */}
+        <circle cx="50" cy="50" r="24" fill="#2d231e" />
+        {/* Body / Sport Jersey */}
+        <path d="M22 110 C26 86 38 84 50 84 C62 84 74 86 78 110 Z" fill="#00b894" />
+        <path d="M39 85 Q50 94 61 85" stroke="#ffffff" strokeWidth="3" fill="none" />
+        <path d="M30 92 L34 110 M70 92 L66 110" stroke="#ffffff" strokeWidth="2.5" opacity="0.8" />
+        {/* Neck */}
+        <rect x="45" y="74" width="10" height="12" rx="4" fill="#b5743b" />
+        {/* Ears & Gold Hoops */}
+        <circle cx="29" cy="58" r="4.5" fill="#c68642" />
+        <circle cx="71" cy="58" r="4.5" fill="#c68642" />
+        <circle cx="28" cy="63" r="3.5" stroke="#f1c40f" strokeWidth="2" />
+        <circle cx="72" cy="63" r="3.5" stroke="#f1c40f" strokeWidth="2" />
         {/* Head */}
-        <circle cx="50" cy="56" r="20" fill="#c68642" />
-        {/* Headband Fluo */}
-        <path d="M30 48 Q50 44 70 48" stroke="#fdcb6e" strokeWidth="6" strokeLinecap="round" />
-        {/* Big Eyes */}
-        <circle cx="43" cy="55" r="3.5" fill="#2d3436" />
-        <circle cx="57" cy="55" r="3.5" fill="#2d3436" />
-        <circle cx="44" cy="54" r="1" fill="#ffffff" />
-        <circle cx="58" cy="54" r="1" fill="#ffffff" />
-        {/* Cheerful Smile */}
-        <path d="M43 65 Q50 72 57 65" stroke="#2d3436" strokeWidth="2.5" strokeLinecap="round" />
-        <path d="M45 66 Q50 70 55 66" fill="#ffffff" />
+        <circle cx="50" cy="57" r="21" fill="#c68642" />
+        {/* Curly Bangs & Hairline */}
+        <path d="M29 52 C29 36 38 31 50 31 C62 31 71 36 71 52 C68 42 60 39 50 39 C40 39 32 42 29 52 Z" fill="#2d231e" />
+        {/* Sport Headband */}
+        <path d="M30 43 Q50 37 70 43" stroke="#ffffff" strokeWidth="6.5" strokeLinecap="round" />
+        <path d="M30 43 Q50 37 70 43" stroke="#ff7675" strokeWidth="2.5" strokeLinecap="round" />
+        {/* Baby Curls over headband */}
+        <circle cx="38" cy="44" r="3.5" fill="#2d231e" />
+        <circle cx="62" cy="44" r="3.5" fill="#2d231e" />
+        {/* Eyebrows */}
+        <path d="M37 49 Q42 46 46 49" stroke="#2d231e" strokeWidth="2.2" strokeLinecap="round" />
+        <path d="M54 49 Q58 46 63 49" stroke="#2d231e" strokeWidth="2.2" strokeLinecap="round" />
+        {/* Expressive Eyes with Lashes */}
+        <circle cx="42" cy="55" r="3.5" fill="#2d231e" />
+        <circle cx="58" cy="55" r="3.5" fill="#2d231e" />
+        <circle cx="43.2" cy="53.8" r="1.2" fill="#ffffff" />
+        <circle cx="59.2" cy="53.8" r="1.2" fill="#ffffff" />
+        <path d="M38 53 L36 51 M62 53 L64 51" stroke="#2d231e" strokeWidth="1.8" strokeLinecap="round" />
+        {/* Cute Nose */}
+        <path d="M49 58 Q50 61 52 59" stroke="#9e622b" strokeWidth="2" strokeLinecap="round" />
+        {/* Rosy Cheeks */}
+        <ellipse cx="36" cy="61" rx="4" ry="2.5" fill="#ff7675" opacity="0.55" />
+        <ellipse cx="64" cy="61" rx="4" ry="2.5" fill="#ff7675" opacity="0.55" />
+        {/* Big Winning Smile */}
+        <path d="M42 65 Q50 74 58 65 Z" fill="#ffffff" stroke="#2d231e" strokeWidth="2" strokeLinejoin="round" />
       </svg>
     ),
   },
