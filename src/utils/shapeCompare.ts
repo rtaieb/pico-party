@@ -5,6 +5,13 @@ export interface Point {
   y: number;
 }
 
+export interface OrientedPoint {
+  x: number;
+  y: number;
+  ux: number;
+  uy: number;
+}
+
 export interface ComparisonResult {
   accuracyPercentage: number;
   shapeScore: number;
@@ -14,44 +21,51 @@ export interface ComparisonResult {
 }
 
 export const CANVAS_SIZE = 340;
-export const BRUSH_WIDTH = 10; // 10px circular brush as requested by user
+export const BRUSH_WIDTH = 10;
 
-const GRID_SIZE = 100; // 100x100 raster simulation grid
-const SCALE = GRID_SIZE / CANVAS_SIZE; // ~ 0.294
-const CELL_SIZE = CANVAS_SIZE / GRID_SIZE; // 3.4 px per cell
+// Sample oriented points along a straight line segment [p1, p2]
+const sampleOrientedLine = (p1: Point, p2: Point, count: number): OrientedPoint[] => {
+  const points: OrientedPoint[] = [];
+  const dx = p2.x - p1.x;
+  const dy = p2.y - p1.y;
+  const len = Math.hypot(dx, dy) || 1;
+  const ux = dx / len;
+  const uy = dy / len;
 
-// Sample points along a straight line segment
-const sampleLine = (p1: Point, p2: Point, count: number): Point[] => {
-  const points: Point[] = [];
   for (let i = 0; i <= count; i++) {
     const t = count === 0 ? 0 : i / count;
     points.push({
-      x: p1.x + (p2.x - p1.x) * t,
-      y: p1.y + (p2.y - p1.y) * t,
+      x: p1.x + dx * t,
+      y: p1.y + dy * t,
+      ux,
+      uy,
     });
   }
   return points;
 };
 
-// Sample points along a circle
-const sampleCircle = (cx: number, cy: number, r: number, count: number): Point[] => {
-  const points: Point[] = [];
+// Sample oriented points along a circle
+const sampleOrientedCircle = (cx: number, cy: number, r: number, count: number): OrientedPoint[] => {
+  const points: OrientedPoint[] = [];
   for (let i = 0; i < count; i++) {
     const angle = (i / count) * 2 * Math.PI;
     points.push({
       x: cx + r * Math.cos(angle),
       y: cy + r * Math.sin(angle),
+      // Tangent vector (-sin, cos)
+      ux: -Math.sin(angle),
+      uy: Math.cos(angle),
     });
   }
   return points;
 };
 
-// Dense reference points for each target shape
-export const getTargetShapePoints = (shape: ShapeType): Point[] => {
-  const points: Point[] = [];
+// Dense oriented reference points for each target shape
+export const getTargetOrientedPoints = (shape: ShapeType): OrientedPoint[] => {
+  const points: OrientedPoint[] = [];
 
   if (shape === 'circle') {
-    return sampleCircle(170, 170, 95, 140);
+    return sampleOrientedCircle(170, 170, 95, 180);
   }
 
   if (shape === 'triangle') {
@@ -60,9 +74,9 @@ export const getTargetShapePoints = (shape: ShapeType): Point[] => {
     const v2 = { x: 170 + r * Math.cos(Math.PI / 6), y: 170 + r * Math.sin(Math.PI / 6) };
     const v3 = { x: 170 - r * Math.cos(Math.PI / 6), y: 170 + r * Math.sin(Math.PI / 6) };
 
-    points.push(...sampleLine(v1, v2, 45));
-    points.push(...sampleLine(v2, v3, 45));
-    points.push(...sampleLine(v3, v1, 45));
+    points.push(...sampleOrientedLine(v1, v2, 60));
+    points.push(...sampleOrientedLine(v2, v3, 60));
+    points.push(...sampleOrientedLine(v3, v1, 60));
     return points;
   }
 
@@ -81,40 +95,46 @@ export const getTargetShapePoints = (shape: ShapeType): Point[] => {
     starVertices.push(starVertices[0]);
 
     for (let i = 0; i < 10; i++) {
-      points.push(...sampleLine(starVertices[i], starVertices[i + 1], 15));
+      points.push(...sampleOrientedLine(starVertices[i], starVertices[i + 1], 22));
     }
     return points;
   }
 
   if (shape === 'stickman') {
     // Head circle
-    points.push(...sampleCircle(170, 75, 30, 45));
+    points.push(...sampleOrientedCircle(170, 75, 30, 55));
     // Body spine
-    points.push(...sampleLine({ x: 170, y: 105 }, { x: 170, y: 205 }, 30));
+    points.push(...sampleOrientedLine({ x: 170, y: 105 }, { x: 170, y: 205 }, 35));
     // Arms
-    points.push(...sampleLine({ x: 105, y: 145 }, { x: 170, y: 135 }, 20));
-    points.push(...sampleLine({ x: 170, y: 135 }, { x: 235, y: 145 }, 20));
+    points.push(...sampleOrientedLine({ x: 105, y: 145 }, { x: 170, y: 135 }, 25));
+    points.push(...sampleOrientedLine({ x: 170, y: 135 }, { x: 235, y: 145 }, 25));
     // Legs
-    points.push(...sampleLine({ x: 170, y: 205 }, { x: 115, y: 290 }, 28));
-    points.push(...sampleLine({ x: 170, y: 205 }, { x: 225, y: 290 }, 28));
+    points.push(...sampleOrientedLine({ x: 170, y: 205 }, { x: 115, y: 290 }, 32));
+    points.push(...sampleOrientedLine({ x: 170, y: 205 }, { x: 225, y: 290 }, 32));
     return points;
   }
 
   if (shape === 'face') {
     // Head circle
-    points.push(...sampleCircle(170, 170, 95, 80));
+    points.push(...sampleOrientedCircle(170, 170, 95, 110));
     // Left eye
-    points.push(...sampleCircle(130, 135, 9, 14));
+    points.push(...sampleOrientedCircle(130, 135, 9, 20));
     // Right eye
-    points.push(...sampleCircle(210, 135, 9, 14));
-    // Smile arc
-    for (let i = 0; i <= 30; i++) {
-      const t = i / 30;
-      const angle = Math.PI * 0.18 + t * Math.PI * 0.64;
-      points.push({
-        x: 170 + 52 * Math.cos(angle),
-        y: 175 + 42 * Math.sin(angle),
-      });
+    points.push(...sampleOrientedCircle(210, 135, 9, 20));
+    // Smile arc: M 125 195 Q 170 240 215 195
+    const p0 = { x: 125, y: 195 };
+    const p1 = { x: 170, y: 240 };
+    const p2 = { x: 215, y: 195 };
+    const steps = 40;
+    for (let i = 0; i <= steps; i++) {
+      const t = i / steps;
+      const mt = 1 - t;
+      const x = mt * mt * p0.x + 2 * mt * t * p1.x + t * t * p2.x;
+      const y = mt * mt * p0.y + 2 * mt * t * p1.y + t * t * p2.y;
+      const dx = 2 * mt * (p1.x - p0.x) + 2 * t * (p2.x - p1.x);
+      const dy = 2 * mt * (p1.y - p0.y) + 2 * t * (p2.y - p1.y);
+      const len = Math.hypot(dx, dy) || 1;
+      points.push({ x, y, ux: dx / len, uy: dy / len });
     }
     return points;
   }
@@ -122,95 +142,95 @@ export const getTargetShapePoints = (shape: ShapeType): Point[] => {
   return points;
 };
 
-// Cache computed distance fields for shapes
-const distanceFieldCache = new Map<ShapeType, Float32Array>();
+export const getTargetShapePoints = (shape: ShapeType): Point[] => {
+  return getTargetOrientedPoints(shape).map(({ x, y }) => ({ x, y }));
+};
 
 /**
- * Builds a distance transform grid (100x100 cells) storing the exact Euclidean distance
- * in pixels to the closest point of the target shape.
+ * Resamples user strokes at uniform ~3px steps and computes local tangent direction (ux, uy)
+ * for each sampled user point.
  */
-export const getShapeDistanceField = (shape: ShapeType): Float32Array => {
-  if (distanceFieldCache.has(shape)) {
-    return distanceFieldCache.get(shape)!;
-  }
+const resampleUserStrokes = (strokes: Point[][]): OrientedPoint[] => {
+  const result: OrientedPoint[] = [];
+  const step = 3;
 
-  const targetPoints = getTargetShapePoints(shape);
-  const grid = new Float32Array(GRID_SIZE * GRID_SIZE);
+  for (const rawStroke of strokes) {
+    const stroke = rawStroke.filter((p) => !isNaN(p.x) && !isNaN(p.y));
+    if (stroke.length < 2) continue;
 
-  for (let gy = 0; gy < GRID_SIZE; gy++) {
-    const py = gy * CELL_SIZE + CELL_SIZE * 0.5;
-    for (let gx = 0; gx < GRID_SIZE; gx++) {
-      const px = gx * CELL_SIZE + CELL_SIZE * 0.5;
+    // First build evenly-spaced points along the polyline
+    const spaced: Point[] = [stroke[0]];
+    let carry = 0;
 
-      let minDistanceSq = Infinity;
-      for (let i = 0; i < targetPoints.length; i++) {
-        const tp = targetPoints[i];
-        const dx = px - tp.x;
-        const dy = py - tp.y;
-        const dSq = dx * dx + dy * dy;
-        if (dSq < minDistanceSq) {
-          minDistanceSq = dSq;
-        }
+    for (let i = 0; i < stroke.length - 1; i++) {
+      let a = stroke[i];
+      const b = stroke[i + 1];
+      let segLen = Math.hypot(b.x - a.x, b.y - a.y);
+      if (segLen < 0.001) continue;
+
+      while (carry + segLen >= step) {
+        const need = step - carry;
+        const t = need / segLen;
+        const nx = a.x + (b.x - a.x) * t;
+        const ny = a.y + (b.y - a.y) * t;
+        spaced.push({ x: nx, y: ny });
+        a = { x: nx, y: ny };
+        segLen = Math.hypot(b.x - a.x, b.y - a.y);
+        carry = 0;
       }
+      carry += segLen;
+    }
 
-      grid[gy * GRID_SIZE + gx] = Math.sqrt(minDistanceSq);
+    if (spaced.length < 2) {
+      spaced.push(stroke[stroke.length - 1]);
+    }
+
+    // Compute local smoothed tangent using window [i-2, i+2] to avoid finger jitter
+    for (let i = 0; i < spaced.length; i++) {
+      const prev = spaced[Math.max(0, i - 2)];
+      const next = spaced[Math.min(spaced.length - 1, i + 2)];
+      const dx = next.x - prev.x;
+      const dy = next.y - prev.y;
+      const len = Math.hypot(dx, dy) || 1;
+      result.push({
+        x: spaced[i].x,
+        y: spaced[i].y,
+        ux: dx / len,
+        uy: dy / len,
+      });
     }
   }
 
-  distanceFieldCache.set(shape, grid);
-  return grid;
+  return result;
 };
 
 /**
- * Exact Euclidean distance from point P to segment [A, B]
- */
-const distToSegment = (p: Point, a: Point, b: Point): number => {
-  const dx = b.x - a.x;
-  const dy = b.y - a.y;
-  const lenSq = dx * dx + dy * dy;
-  if (lenSq === 0) {
-    return Math.hypot(p.x - a.x, p.y - a.y);
-  }
-  const t = Math.max(0, Math.min(1, ((p.x - a.x) * dx + (p.y - a.y) * dy) / lenSq));
-  const projX = a.x + t * dx;
-  const projY = a.y + t * dy;
-  return Math.hypot(p.x - projX, p.y - projY);
-};
-
-/**
- * Expected number of drawn grid cells for a single clean pass of each shape.
- * Used only to detect excessive over-drawing / double-tracing.
- */
-const expectedDrawnPixels: Record<ShapeType, number> = {
-  circle: 520,
-  triangle: 500,
-  star: 650,
-  stickman: 520,
-  face: 560,
-};
-
-/**
- * Normalized Scoring Engine based on Target Margins & Coverage:
- * 1. Precision per drawn pixel (average over all drawn pixels, impossible to inflate by drawing longer):
- *    - Distance <= 8px (Core / Max points): +1.0 pt
- *    - 8px < Distance <= 18px (Near Margin / Partial points): +0.55 pt
- *    - 18px < Distance <= 30px (Overflow / Dilutes average): -0.15 pt
- *    - Distance > 30px (Out of bounds / Penalty): -0.9 pt
- * 2. Target Shape Coverage (how much of the reference shape was actually traced):
- *    - Target point within <= 10px of user stroke: 100% covered
- *    - Target point within 10..18px of user stroke: 50% covered
- *    - Target point > 18px away: 0% covered
+ * Strict Direction-Aware & Multiplicative Scoring Engine:
+ *
+ * 1. Direction Alignment (|cos(Δθ)|):
+ *    - A user stroke that merely crosses a target line (e.g. drawing a circle across the 5 tips of a star)
+ *      has a large angle difference (Δθ > 40°, |cos(Δθ)| < 0.76) and gets 0 credit!
+ *
+ * 2. Per-Point Precision (User -> Target):
+ *    - Distance <= 8px AND aligned: up to +1.0 pt
+ *    - Distance 8..16px AND aligned: up to +0.5 pt
+ *    - Distance 16..26px: -0.25 pt
+ *    - Distance > 26px (Out of bounds): -1.0 pt
+ *
+ * 3. Per-Point Coverage (Target -> User):
+ *    - Only counts target points covered within <= 14px by a stroke moving in the same direction (Δθ <= 40°).
+ *
+ * 4. Multiplicative Combination & Hard Floor:
+ *    - If strict coverage < 30% (e.g., circle on a star only touches tips = ~10% aligned coverage), score is 0%!
  */
 export const evaluateDrawnShape = (
   strokes: Point[][],
   shape: ShapeType
 ): ComparisonResult => {
-  const validStrokes = strokes
-    .map((s) => s.filter((p) => !isNaN(p.x) && !isNaN(p.y)))
-    .filter((s) => s.length > 0);
-  const allPoints = validStrokes.flat();
+  const userPoints = resampleUserStrokes(strokes);
+  const targetPoints = getTargetOrientedPoints(shape);
 
-  if (allPoints.length < 5 || typeof document === 'undefined') {
+  if (userPoints.length < 8 || targetPoints.length === 0) {
     return {
       accuracyPercentage: 0,
       shapeScore: 0,
@@ -220,137 +240,99 @@ export const evaluateDrawnShape = (
     };
   }
 
-  const distField = getShapeDistanceField(shape);
-  const targetPoints = getTargetShapePoints(shape);
+  // 1. Evaluate Precision: continuous distance decay for aligned strokes, penalty for misaligned/out-of-bounds
+  let precisionSum = 0;
+  let penaltyPoints = 0;
 
-  // 1. Render user strokes with a 10px circular brush onto offscreen grid
-  const canvas = document.createElement('canvas');
-  canvas.width = GRID_SIZE;
-  canvas.height = GRID_SIZE;
-  const ctx = canvas.getContext('2d');
+  for (let i = 0; i < userPoints.length; i++) {
+    const up = userPoints[i];
+    let rawMinDist = Infinity;
+    let alignedMinDist = Infinity;
 
-  if (!ctx) {
-    return {
-      accuracyPercentage: 50,
-      shapeScore: 50,
-      coverageScore: 50,
-      penaltyPixels: 0,
-      feedback: 'Bien joué !',
-    };
-  }
+    for (let j = 0; j < targetPoints.length; j++) {
+      const tp = targetPoints[j];
+      const d = Math.hypot(up.x - tp.x, up.y - tp.y);
+      if (d < rawMinDist) {
+        rawMinDist = d;
+      }
+      const align = Math.abs(up.ux * tp.ux + up.uy * tp.uy);
+      // Within ~35° of the target segment direction (cos 35° ≈ 0.82)
+      if (align >= 0.82 && d < alignedMinDist) {
+        alignedMinDist = d;
+      }
+    }
 
-  ctx.fillStyle = '#000';
-  ctx.strokeStyle = '#000';
-  ctx.lineWidth = BRUSH_WIDTH * SCALE;
-  ctx.lineCap = 'round';
-  ctx.lineJoin = 'round';
-
-  for (const stroke of validStrokes) {
-    ctx.beginPath();
-    ctx.moveTo(stroke[0].x * SCALE, stroke[0].y * SCALE);
-    if (stroke.length === 1) {
-      ctx.lineTo((stroke[0].x + 0.2) * SCALE, (stroke[0].y + 0.2) * SCALE);
+    if (alignedMinDist <= 2.5) {
+      precisionSum += 1.0;
+    } else if (alignedMinDist <= 18) {
+      // Smooth decay from 1.0 (at 2.5px) down to 0.0 (at 18px)
+      precisionSum += 1.0 - (alignedMinDist - 2.5) / 15.5;
+    } else if (rawMinDist <= 18) {
+      // Close to a line, but cutting across it at > 35° (e.g. circle crossing star spikes)
+      precisionSum -= 0.4;
     } else {
-      for (let i = 1; i < stroke.length; i++) {
-        ctx.lineTo(stroke[i].x * SCALE, stroke[i].y * SCALE);
-      }
-    }
-    ctx.stroke();
-  }
-
-  const imgData = ctx.getImageData(0, 0, GRID_SIZE, GRID_SIZE).data;
-
-  // 2. Per-pixel Precision calculation (normalized by totalDrawnPixels)
-  let scoreSum = 0;
-  let penaltyPixels = 0;
-  let totalDrawnPixels = 0;
-
-  for (let gy = 0; gy < GRID_SIZE; gy++) {
-    for (let gx = 0; gx < GRID_SIZE; gx++) {
-      const idx = gy * GRID_SIZE + gx;
-      const alpha = imgData[idx * 4 + 3];
-
-      if (alpha > 40) {
-        totalDrawnPixels++;
-        const d = distField[idx];
-
-        if (d <= 8) {
-          // Zone 1 : Cœur du tracé (Max points)
-          scoreSum += 1.0;
-        } else if (d <= 18) {
-          // Zone 2 : Marge de tolérance (Points partiels)
-          scoreSum += 0.55;
-        } else if (d <= 30) {
-          // Zone 3 : Débordement (Légère pénalité + dilue la moyenne)
-          scoreSum -= 0.15;
-        } else {
-          // Zone 4 : Hors-piste (Forte pénalité)
-          scoreSum -= 0.9;
-          penaltyPixels++;
-        }
+      // Out of bounds (> 18px): progressive penalty up to -1.2
+      const pen = Math.min(1.2, (rawMinDist - 18) / 14);
+      precisionSum -= pen;
+      if (rawMinDist > 24) {
+        penaltyPoints++;
       }
     }
   }
 
-  if (totalDrawnPixels === 0) {
-    return {
-      accuracyPercentage: 0,
-      shapeScore: 0,
-      coverageScore: 0,
-      penaltyPixels: 0,
-      feedback: 'Aucun tracé détecté !',
-    };
-  }
+  const precisionRatio = Math.max(0, Math.min(1, precisionSum / userPoints.length));
 
-  // Average precision per drawn pixel, strictly bounded in [0, 1]
-  const precisionRatio = Math.max(0, Math.min(1, scoreSum / totalDrawnPixels));
+  // 2. Evaluate Coverage: continuous decay for each target point covered in the right direction
+  let coveredWeight = 0;
+  let strictCoveredCount = 0;
 
-  // 3. Exact Coverage check using point-to-segment distance from each target point to user strokes
-  let weightedCoveredPoints = 0;
-  let strictCoveredPoints = 0;
+  for (let j = 0; j < targetPoints.length; j++) {
+    const tp = targetPoints[j];
+    let bestAlignedDist = Infinity;
 
-  for (let i = 0; i < targetPoints.length; i++) {
-    const tp = targetPoints[i];
-    let minDist = Infinity;
-
-    for (const stroke of validStrokes) {
-      if (stroke.length === 1) {
-        const d = Math.hypot(tp.x - stroke[0].x, tp.y - stroke[0].y);
-        if (d < minDist) minDist = d;
-      } else {
-        for (let j = 0; j < stroke.length - 1; j++) {
-          const d = distToSegment(tp, stroke[j], stroke[j + 1]);
-          if (d < minDist) minDist = d;
+    for (let i = 0; i < userPoints.length; i++) {
+      const up = userPoints[i];
+      const align = Math.abs(up.ux * tp.ux + up.uy * tp.uy);
+      if (align >= 0.82) {
+        const d = Math.hypot(up.x - tp.x, up.y - tp.y);
+        if (d < bestAlignedDist) {
+          bestAlignedDist = d;
         }
       }
     }
 
-    if (minDist <= 10) {
-      weightedCoveredPoints += 1.0;
-      strictCoveredPoints += 1;
-    } else if (minDist <= 18) {
-      weightedCoveredPoints += 0.5;
+    if (bestAlignedDist <= 2.5) {
+      coveredWeight += 1.0;
+      strictCoveredCount += 1.0;
+    } else if (bestAlignedDist <= 16) {
+      const w = 1.0 - (bestAlignedDist - 2.5) / 13.5;
+      coveredWeight += w;
+      if (bestAlignedDist <= 9) {
+        strictCoveredCount += 1.0;
+      }
     }
   }
 
-  const coverageRatio = weightedCoveredPoints / targetPoints.length;
-  const strictCoveragePercentage = Math.round((strictCoveredPoints / targetPoints.length) * 100);
+  const coverageRatio = coveredWeight / targetPoints.length;
+  const strictCoveragePercentage = Math.round((strictCoveredCount / targetPoints.length) * 100);
 
-  // 4. Final score computation combining precision (50%) and coverage (50%),
-  //    with a progressive penalty if less than 50% of the shape is covered or if over-drawn.
+  // 3. Overdraw check (prevent drawing multiple passes to fish for coverage)
+  const lengthRatio = userPoints.length / targetPoints.length;
+  const overdrawFactor =
+    lengthRatio > 1.3 ? Math.max(0, 1 - (lengthRatio - 1.3) * 0.9) : 1;
+
+  // 4. Final Multiplicative Score (Précision × Couverture) with Strict Minimum Floor
   let finalPercentage = 0;
-  if (precisionRatio > 0 && coverageRatio > 0.05) {
-    const completenessFactor = Math.min(1, coverageRatio / 0.5);
-    const overdrawRatio = totalDrawnPixels / (expectedDrawnPixels[shape] || 550);
-    const overdrawPenalty = overdrawRatio > 1.35 ? Math.max(0.2, 1 - (overdrawRatio - 1.35) * 0.7) : 1;
 
-    const combinedRatio = (precisionRatio * 0.5 + coverageRatio * 0.5) * completenessFactor * overdrawPenalty;
-    finalPercentage = Math.round(Math.min(99, Math.max(0, combinedRatio * 100)));
+  // Hard floor: if effective coverage < 22% or strict coverage < 20% or precision <= 12%, score is 0%!
+  if (coverageRatio >= 0.22 && strictCoveragePercentage >= 20 && precisionRatio > 0.12) {
+    const rawProduct = precisionRatio * coverageRatio;
+    finalPercentage = Math.round(Math.min(99, Math.max(0, rawProduct * overdrawFactor * 100)));
   }
 
-  // Heavy out-of-bounds penalty if more than 30% of the drawing is > 30px away
-  if (penaltyPixels > totalDrawnPixels * 0.3) {
-    finalPercentage = Math.max(0, Math.round(finalPercentage * 0.35));
+  // If more than 30% of user stroke is out-of-bounds (> 24px), penalize
+  if (penaltyPoints > userPoints.length * 0.3) {
+    finalPercentage = Math.round(finalPercentage * 0.5);
   }
 
   let feedback = 'Pas mal !';
@@ -358,14 +340,15 @@ export const evaluateDrawnShape = (
   else if (finalPercentage >= 70) feedback = 'Superbe coup de crayon ! ✨';
   else if (finalPercentage >= 50) feedback = 'Bien joué, forme reconnaissable ! 👍';
   else if (finalPercentage >= 25) feedback = 'Un peu décalé ou trop de débordements ! 😄';
-  else if (penaltyPixels > 45) feedback = 'Trop de hors-piste / gribouillis ! 🛑';
+  else if (penaltyPoints > 25) feedback = 'Forme incorrecte ou hors-piste ! 🛑';
   else feedback = 'Forme incomplète, réessayez ! 🎨';
 
   return {
     accuracyPercentage: finalPercentage,
     shapeScore: Math.round(precisionRatio * 100),
     coverageScore: strictCoveragePercentage,
-    penaltyPixels,
+    penaltyPixels: penaltyPoints,
     feedback,
   };
 };
+
