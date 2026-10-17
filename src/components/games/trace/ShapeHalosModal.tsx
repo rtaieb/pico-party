@@ -32,12 +32,12 @@ export const ShapeHalosModal: React.FC<ShapeHalosModalProps> = ({
       case 'circle':
         return (
           <>
-            {/* Zone 3 Débordement (épaisseur 80px = rayon 40px) */}
-            <circle cx="170" cy="170" r="95" fill="none" stroke="rgba(251, 146, 60, 0.3)" strokeWidth="80" />
-            {/* Zone 2 Tolérance (épaisseur 52px = rayon 26px) */}
-            <circle cx="170" cy="170" r="95" fill="none" stroke="rgba(250, 204, 21, 0.45)" strokeWidth="52" />
-            {/* Zone 1 Cœur (épaisseur 24px = rayon 12px) */}
-            <circle cx="170" cy="170" r="95" fill="none" stroke="rgba(16, 185, 129, 0.75)" strokeWidth="24" />
+            {/* Zone 3 Débordement (épaisseur 60px = rayon 30px) */}
+            <circle cx="170" cy="170" r="95" fill="none" stroke="rgba(251, 146, 60, 0.3)" strokeWidth="60" />
+            {/* Zone 2 Tolérance (épaisseur 36px = rayon 18px) */}
+            <circle cx="170" cy="170" r="95" fill="none" stroke="rgba(250, 204, 21, 0.45)" strokeWidth="36" />
+            {/* Zone 1 Cœur (épaisseur 16px = rayon 8px) */}
+            <circle cx="170" cy="170" r="95" fill="none" stroke="rgba(16, 185, 129, 0.75)" strokeWidth="16" />
             {/* Ligne médiane cible */}
             <circle cx="170" cy="170" r="95" fill="none" stroke="#047857" strokeWidth="2.5" />
             {/* Exemple Pinceau 10px posé */}
@@ -56,21 +56,21 @@ export const ShapeHalosModal: React.FC<ShapeHalosModalProps> = ({
               points="170,60 265.26,225 74.74,225"
               fill="none"
               stroke="rgba(251, 146, 60, 0.3)"
-              strokeWidth="80"
+              strokeWidth="60"
               strokeLinejoin="round"
             />
             <polygon
               points="170,60 265.26,225 74.74,225"
               fill="none"
               stroke="rgba(250, 204, 21, 0.45)"
-              strokeWidth="52"
+              strokeWidth="36"
               strokeLinejoin="round"
             />
             <polygon
               points="170,60 265.26,225 74.74,225"
               fill="none"
               stroke="rgba(16, 185, 129, 0.75)"
-              strokeWidth="24"
+              strokeWidth="16"
               strokeLinejoin="round"
             />
             <polygon
@@ -104,21 +104,21 @@ export const ShapeHalosModal: React.FC<ShapeHalosModalProps> = ({
               points={ptsStr}
               fill="none"
               stroke="rgba(251, 146, 60, 0.3)"
-              strokeWidth="70"
+              strokeWidth="60"
               strokeLinejoin="round"
             />
             <polygon
               points={ptsStr}
               fill="none"
               stroke="rgba(250, 204, 21, 0.45)"
-              strokeWidth="48"
+              strokeWidth="36"
               strokeLinejoin="round"
             />
             <polygon
               points={ptsStr}
               fill="none"
               stroke="rgba(16, 185, 129, 0.75)"
-              strokeWidth="24"
+              strokeWidth="16"
               strokeLinejoin="round"
             />
             <polygon
@@ -141,7 +141,7 @@ export const ShapeHalosModal: React.FC<ShapeHalosModalProps> = ({
             <g
               fill="none"
               stroke="rgba(251, 146, 60, 0.3)"
-              strokeWidth="70"
+              strokeWidth="60"
               strokeLinecap="round"
               strokeLinejoin="round"
             >
@@ -156,7 +156,7 @@ export const ShapeHalosModal: React.FC<ShapeHalosModalProps> = ({
             <g
               fill="none"
               stroke="rgba(250, 204, 21, 0.45)"
-              strokeWidth="48"
+              strokeWidth="36"
               strokeLinecap="round"
               strokeLinejoin="round"
             >
@@ -171,7 +171,7 @@ export const ShapeHalosModal: React.FC<ShapeHalosModalProps> = ({
             <g
               fill="none"
               stroke="rgba(16, 185, 129, 0.75)"
-              strokeWidth="24"
+              strokeWidth="16"
               strokeLinecap="round"
               strokeLinejoin="round"
             >
@@ -209,7 +209,7 @@ export const ShapeHalosModal: React.FC<ShapeHalosModalProps> = ({
             <g
               fill="none"
               stroke="rgba(251, 146, 60, 0.3)"
-              strokeWidth="70"
+              strokeWidth="60"
               strokeLinecap="round"
               strokeLinejoin="round"
             >
@@ -222,7 +222,7 @@ export const ShapeHalosModal: React.FC<ShapeHalosModalProps> = ({
             <g
               fill="none"
               stroke="rgba(250, 204, 21, 0.45)"
-              strokeWidth="48"
+              strokeWidth="36"
               strokeLinecap="round"
               strokeLinejoin="round"
             >
@@ -235,7 +235,7 @@ export const ShapeHalosModal: React.FC<ShapeHalosModalProps> = ({
             <g
               fill="none"
               stroke="rgba(16, 185, 129, 0.75)"
-              strokeWidth="24"
+              strokeWidth="16"
               strokeLinecap="round"
               strokeLinejoin="round"
             >
@@ -397,17 +397,17 @@ export const ShapeHalosModal: React.FC<ShapeHalosModalProps> = ({
           {/* Scoring Table Summary */}
           <div className="clay-card p-3.5 bg-slate-50 border border-slate-200 space-y-2 mt-2">
             <h4 className="font-heading font-bold text-xs text-slate-700 uppercase tracking-wide">
-              Barème des 4 marges concentriques
+              Barème (50% Précision moyenne • 50% Couverture)
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
               <div className="flex items-center gap-2 p-2 rounded-xl bg-emerald-50 border border-emerald-200">
                 <Check className="w-4 h-4 text-emerald-600 flex-shrink-0" />
                 <div>
                   <div className="font-bold text-emerald-800">
-                    Zone Cœur (Vert) : +1.0 pt
+                    Zone Cœur (Vert) : +1.0 pt / px
                   </div>
                   <div className="text-[11px] text-emerald-700">
-                    Distance ≤ 12px • Pile sur la silhouette
+                    Distance ≤ 8px • Pile sur le tracé
                   </div>
                 </div>
               </div>
@@ -416,10 +416,10 @@ export const ShapeHalosModal: React.FC<ShapeHalosModalProps> = ({
                 <Sparkles className="w-4 h-4 text-amber-600 flex-shrink-0" />
                 <div>
                   <div className="font-bold text-amber-800">
-                    Zone Tolérance (Jaune) : +0.55 pt
+                    Zone Tolérance (Jaune) : +0.55 pt / px
                   </div>
                   <div className="text-[11px] text-amber-700">
-                    Distance 12 à 26px • Légère déviation
+                    Distance 8 à 18px • Légère déviation
                   </div>
                 </div>
               </div>
@@ -428,10 +428,10 @@ export const ShapeHalosModal: React.FC<ShapeHalosModalProps> = ({
                 <AlertTriangle className="w-4 h-4 text-orange-600 flex-shrink-0" />
                 <div>
                   <div className="font-bold text-orange-800">
-                    Débordement (Orange) : -0.25 pt
+                    Débordement (Orange) : -0.15 pt / px
                   </div>
                   <div className="text-[11px] text-orange-700">
-                    Distance 26 à 40px • Sortie de route
+                    Distance 18 à 30px • Fait baisser la moyenne
                   </div>
                 </div>
               </div>
@@ -440,10 +440,10 @@ export const ShapeHalosModal: React.FC<ShapeHalosModalProps> = ({
                 <XCircle className="w-4 h-4 text-rose-600 flex-shrink-0" />
                 <div>
                   <div className="font-bold text-rose-800">
-                    Hors-piste (Rouge) : -1.35 pt
+                    Hors-piste (Rouge) : -0.90 pt / px
                   </div>
                   <div className="text-[11px] text-rose-700">
-                    Distance &gt; 40px • Gribouillage sanctionné à 0%
+                    Distance &gt; 30px • Forte pénalité sur le score
                   </div>
                 </div>
               </div>

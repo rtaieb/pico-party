@@ -629,11 +629,13 @@ export const TraceGame: React.FC<TraceGameProps> = ({
                     Ton tracé 10px (violet)
                   </span>
                 </div>
-                <div className="flex items-center gap-3 text-[11px] font-semibold text-slate-500">
+                <div className="flex flex-wrap items-center justify-center gap-3 text-[11px] font-semibold text-slate-500">
+                  <span>Précision : {activeAttempt.evaluation.shapeScore}%</span>
+                  <span>•</span>
                   <span>Forme couverte : {activeAttempt.evaluation.coverageScore}%</span>
-                  {activeAttempt.evaluation.penaltyPixels > 30 && (
+                  {activeAttempt.evaluation.penaltyPixels > 20 && (
                     <span className="text-rose-500 font-bold">
-                      Débordements hors-piste détectés
+                      • Débordements hors-piste détectés
                     </span>
                   )}
                 </div>
