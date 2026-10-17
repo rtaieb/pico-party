@@ -222,7 +222,7 @@ export const TraceGame: React.FC<TraceGameProps> = ({
           cx="170"
           cy="170"
           r="95"
-          fill="rgba(168, 85, 247, 0.12)"
+          fill="none"
           stroke="#9333ea"
           strokeWidth="6"
         />
@@ -236,7 +236,7 @@ export const TraceGame: React.FC<TraceGameProps> = ({
       return (
         <polygon
           points={`${v1} ${v2} ${v3}`}
-          fill="rgba(168, 85, 247, 0.12)"
+          fill="none"
           stroke="#9333ea"
           strokeWidth="6"
           strokeLinejoin="round"
@@ -255,7 +255,7 @@ export const TraceGame: React.FC<TraceGameProps> = ({
       return (
         <polygon
           points={pts.join(' ')}
-          fill="rgba(168, 85, 247, 0.12)"
+          fill="none"
           stroke="#9333ea"
           strokeWidth="6"
           strokeLinejoin="round"
@@ -265,7 +265,7 @@ export const TraceGame: React.FC<TraceGameProps> = ({
     if (shape === 'stickman') {
       return (
         <g stroke="#9333ea" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" fill="none">
-          <circle cx="170" cy="75" r="30" fill="rgba(168, 85, 247, 0.12)" />
+          <circle cx="170" cy="75" r="30" fill="none" />
           <line x1="170" y1="105" x2="170" y2="205" />
           <line x1="105" y1="145" x2="170" y2="135" />
           <line x1="170" y1="135" x2="235" y2="145" />
@@ -277,9 +277,9 @@ export const TraceGame: React.FC<TraceGameProps> = ({
     if (shape === 'face') {
       return (
         <g stroke="#9333ea" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" fill="none">
-          <circle cx="170" cy="170" r="95" fill="rgba(168, 85, 247, 0.12)" />
-          <circle cx="130" cy="135" r="9" fill="#9333ea" />
-          <circle cx="210" cy="135" r="9" fill="#9333ea" />
+          <circle cx="170" cy="170" r="95" fill="none" />
+          <circle cx="130" cy="135" r="9" fill="none" />
+          <circle cx="210" cy="135" r="9" fill="none" />
           <path d="M 125 195 Q 170 240 215 195" />
         </g>
       );
@@ -295,7 +295,7 @@ export const TraceGame: React.FC<TraceGameProps> = ({
           cx="170"
           cy="170"
           r="95"
-          fill="rgba(16, 185, 129, 0.15)"
+          fill="none"
           stroke="#10b981"
           strokeWidth="4"
           strokeDasharray="6 4"
@@ -310,7 +310,7 @@ export const TraceGame: React.FC<TraceGameProps> = ({
       return (
         <polygon
           points={`${v1} ${v2} ${v3}`}
-          fill="rgba(16, 185, 129, 0.15)"
+          fill="none"
           stroke="#10b981"
           strokeWidth="4"
           strokeDasharray="6 4"
@@ -330,7 +330,7 @@ export const TraceGame: React.FC<TraceGameProps> = ({
       return (
         <polygon
           points={pts.join(' ')}
-          fill="rgba(16, 185, 129, 0.15)"
+          fill="none"
           stroke="#10b981"
           strokeWidth="4"
           strokeDasharray="6 4"
@@ -341,7 +341,7 @@ export const TraceGame: React.FC<TraceGameProps> = ({
     if (shape === 'stickman') {
       return (
         <g stroke="#10b981" strokeWidth="4" strokeDasharray="6 4" strokeLinecap="round" strokeLinejoin="round" fill="none">
-          <circle cx="170" cy="75" r="30" fill="rgba(16, 185, 129, 0.12)" />
+          <circle cx="170" cy="75" r="30" fill="none" />
           <line x1="170" y1="105" x2="170" y2="205" />
           <line x1="105" y1="145" x2="170" y2="135" />
           <line x1="170" y1="135" x2="235" y2="145" />
@@ -353,9 +353,9 @@ export const TraceGame: React.FC<TraceGameProps> = ({
     if (shape === 'face') {
       return (
         <g stroke="#10b981" strokeWidth="4" strokeDasharray="6 4" strokeLinecap="round" strokeLinejoin="round" fill="none">
-          <circle cx="170" cy="170" r="95" fill="rgba(16, 185, 129, 0.12)" />
-          <circle cx="130" cy="135" r="9" fill="#10b981" />
-          <circle cx="210" cy="135" r="9" fill="#10b981" />
+          <circle cx="170" cy="170" r="95" fill="none" />
+          <circle cx="130" cy="135" r="9" fill="none" />
+          <circle cx="210" cy="135" r="9" fill="none" />
           <path d="M 125 195 Q 170 240 215 195" />
         </g>
       );

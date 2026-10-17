@@ -253,8 +253,8 @@ export const ShapeHalosModal: React.FC<ShapeHalosModalProps> = ({
               strokeLinejoin="round"
             >
               <circle cx="170" cy="170" r="95" />
-              <circle cx="130" cy="135" r="9" fill="#047857" />
-              <circle cx="210" cy="135" r="9" fill="#047857" />
+              <circle cx="130" cy="135" r="9" />
+              <circle cx="210" cy="135" r="9" />
               <path d="M 125 195 Q 170 240 215 195" />
             </g>
             {/* Exemple Pinceau 10px posé sur le sourire */}
