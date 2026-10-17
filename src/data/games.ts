@@ -25,6 +25,18 @@ export const MINI_GAMES: MiniGameMeta[] = [
     bgGradient: 'from-purple-100 via-pink-50 to-purple-50',
     accentColor: '#9b59b6',
   },
+  {
+    id: 'rhythm',
+    title: 'Tam-Tam Studio',
+    subtitle: 'Reproduisez le rythme à l\'oreille !',
+    description: 'Écoutez le rythme et reproduisez-le sur le tam-tam !',
+    badge: '🥁 Sens du rythme',
+    iconName: 'drum',
+    minPlayers: 1,
+    maxPlayers: 8,
+    bgGradient: 'from-teal-100 via-emerald-50 to-cyan-50',
+    accentColor: '#10b981',
+  },
 ];
 
 export const getGameById = (id: string): MiniGameMeta => {

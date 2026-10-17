@@ -1,7 +1,7 @@
 import React from 'react';
 import type { GameId } from '../../types';
 import { MINI_GAMES } from '../../data/games';
-import { Timer, Shapes, Sparkles, Users, Lock, ChevronRight } from 'lucide-react';
+import { Timer, Shapes, Drum, Sparkles, Users, Lock, ChevronRight } from 'lucide-react';
 import { sound } from '../../utils/sound';
 
 interface GameCatalogScreenProps {
@@ -40,6 +40,7 @@ export const GameCatalogScreen: React.FC<GameCatalogScreenProps> = ({
       <div className="space-y-4">
         {MINI_GAMES.map((game) => {
           const isChrono = game.id === 'chrono';
+          const isRhythm = game.id === 'rhythm';
 
           return (
             <div
@@ -53,7 +54,11 @@ export const GameCatalogScreen: React.FC<GameCatalogScreenProps> = ({
               {/* Decorative pastel corner glow */}
               <div
                 className={`absolute -top-12 -right-12 w-32 h-32 rounded-full blur-2xl opacity-40 ${
-                  isChrono ? 'bg-amber-300' : 'bg-purple-300'
+                  isChrono
+                    ? 'bg-amber-300'
+                    : isRhythm
+                    ? 'bg-teal-300'
+                    : 'bg-purple-300'
                 }`}
               />
 
@@ -63,11 +68,15 @@ export const GameCatalogScreen: React.FC<GameCatalogScreenProps> = ({
                   className={`w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center shadow-md flex-shrink-0 border-2 border-white ${
                     isChrono
                       ? 'bg-gradient-to-tr from-amber-400 to-yellow-300 text-slate-900 shadow-amber-300/40'
+                      : isRhythm
+                      ? 'bg-gradient-to-tr from-teal-500 to-emerald-400 text-white shadow-teal-300/40'
                       : 'bg-gradient-to-tr from-purple-500 to-pink-400 text-white shadow-purple-300/40'
                   }`}
                 >
                   {isChrono ? (
                     <Timer className="w-8 h-8 stroke-[2.2]" />
+                  ) : isRhythm ? (
+                    <Drum className="w-8 h-8 stroke-[2.2]" />
                   ) : (
                     <Shapes className="w-8 h-8 stroke-[2.2]" />
                   )}

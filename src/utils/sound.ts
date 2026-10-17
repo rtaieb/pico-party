@@ -153,6 +153,72 @@ class SoundEffects {
       osc.stop(noteTime + duration + 0.05);
     });
   }
+
+  // Warm tactile Tam-Tam / Drum hit sound for the Rhythm Game
+  playDrumHit(isPlayer: boolean = false) {
+    if (!this.enabled) return;
+    this.initCtx();
+    if (!this.ctx) return;
+
+    const now = this.ctx.currentTime;
+
+    // 1. Body resonance (pitched membrane drop)
+    const bodyOsc = this.ctx.createOscillator();
+    const bodyGain = this.ctx.createGain();
+    bodyOsc.type = 'triangle';
+    const startFreq = isPlayer ? 240 : 210;
+    const endFreq = isPlayer ? 95 : 85;
+    bodyOsc.frequency.setValueAtTime(startFreq, now);
+    bodyOsc.frequency.exponentialRampToValueAtTime(endFreq, now + 0.14);
+
+    bodyGain.gain.setValueAtTime(0.38, now);
+    bodyGain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+
+    bodyOsc.connect(bodyGain);
+    bodyGain.connect(this.ctx.destination);
+
+    // 2. Crisp wooden rim / skin attack click
+    const clickOsc = this.ctx.createOscillator();
+    const clickGain = this.ctx.createGain();
+    clickOsc.type = 'sine';
+    clickOsc.frequency.setValueAtTime(isPlayer ? 820 : 720, now);
+    clickOsc.frequency.exponentialRampToValueAtTime(180, now + 0.035);
+
+    clickGain.gain.setValueAtTime(0.25, now);
+    clickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+
+    clickOsc.connect(clickGain);
+    clickGain.connect(this.ctx.destination);
+
+    bodyOsc.start(now);
+    clickOsc.start(now);
+    bodyOsc.stop(now + 0.17);
+    clickOsc.stop(now + 0.045);
+  }
+
+  // Soft timeout gong when 5s limit expires
+  playTimeout() {
+    if (!this.enabled) return;
+    this.initCtx();
+    if (!this.ctx) return;
+
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(220, now);
+    osc.frequency.linearRampToValueAtTime(130, now + 0.35);
+
+    gain.gain.setValueAtTime(0.18, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.38);
+
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + 0.4);
+  }
 }
 
 export const sound = new SoundEffects();

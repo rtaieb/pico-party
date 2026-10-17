@@ -5,6 +5,7 @@ import { GameCatalogScreen } from './components/games/GameCatalogScreen';
 import { PlayerSelectScreen } from './components/players/PlayerSelectScreen';
 import { ChronoGame } from './components/games/chrono/ChronoGame';
 import { TraceGame } from './components/games/trace/TraceGame';
+import { RhythmGame } from './components/games/rhythm/RhythmGame';
 import { PodiumScreen } from './components/games/PodiumScreen';
 import {
   getStoredPlayers,
@@ -71,7 +72,11 @@ export const App: React.FC = () => {
   const handleDeletePlayer = (playerId: string) => {
     const updated = deletePlayer(playerId);
     setPlayers(updated);
-    setSelectedPlayerIds((prev) => prev.filter((id) => id !== playerId));
+    setSelectedPlayerIds((prev) => {
+      const next = prev.filter((id) => id !== playerId);
+      saveLastSelectedPlayerIds(next);
+      return next;
+    });
   };
 
   // Navigation handlers
@@ -200,6 +205,14 @@ export const App: React.FC = () => {
 
               {screenState.gameId === 'trace' && (
                 <TraceGame
+                  players={activeGamePlayers}
+                  onFinish={handleFinishGame}
+                  onExit={handleBack}
+                />
+              )}
+
+              {screenState.gameId === 'rhythm' && (
+                <RhythmGame
                   players={activeGamePlayers}
                   onFinish={handleFinishGame}
                   onExit={handleBack}

@@ -461,8 +461,8 @@ export const TraceGame: React.FC<TraceGameProps> = ({
             </span>
           </div>
 
-          {/* Status Message Strip - Fixed Height to prevent any vertical shift! */}
-          <div className="h-7 flex items-center justify-center">
+          {/* Status Message Strip - Fixed Height during ready/memorize/drawing to prevent vertical shift */}
+          <div className="min-h-7 flex items-center justify-center">
             {phase === 'player_ready' && (
               <span className="text-xs font-bold text-purple-600 animate-pulse">
                 Appuie sur « Démarrer » pour observer la forme (6s)
@@ -479,9 +479,14 @@ export const TraceGame: React.FC<TraceGameProps> = ({
               </span>
             )}
             {phase === 'review_player' && activeAttempt?.evaluation && (
-              <span className="text-xs font-bold text-purple-700">
-                Score : {activeAttempt.evaluation.accuracyPercentage}% ({activeAttempt.evaluation.feedback})
-              </span>
+              <div className="flex flex-col items-center gap-1 py-1 animate-in zoom-in-95 duration-200">
+                <div className="font-heading font-black text-3xl sm:text-4xl text-purple-700 tracking-tight">
+                  Score : {activeAttempt.evaluation.accuracyPercentage}%
+                </div>
+                <span className="text-sm sm:text-base font-bold text-slate-700 bg-purple-100/80 px-3.5 py-0.5 rounded-full">
+                  {activeAttempt.evaluation.feedback}
+                </span>
+              </div>
             )}
           </div>
 
