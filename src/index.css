@@ -1,0 +1,130 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --clay-shadow: 0 10px 24px -4px rgba(135, 120, 150, 0.16), 0 4px 10px -2px rgba(135, 120, 150, 0.1);
+    --clay-inner-light: inset 0 2px 4px rgba(255, 255, 255, 0.85);
+    --clay-inner-dark: inset 0 -3px 5px rgba(0, 0, 0, 0.05);
+  }
+
+  body {
+    background-color: #faf6f0;
+    font-family: 'Nunito', system-ui, -apple-system, sans-serif;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  h1, h2, h3, h4, .font-heading {
+    font-family: 'Fredoka', cursive, system-ui, sans-serif;
+  }
+}
+
+/* Claymorphism Utility Classes */
+.clay-card {
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 1.75rem;
+  box-shadow: 
+    0 12px 28px -6px rgba(150, 130, 165, 0.18),
+    0 4px 12px -2px rgba(150, 130, 165, 0.1),
+    inset 0 2px 5px rgba(255, 255, 255, 0.9),
+    inset 0 -3px 6px rgba(150, 130, 165, 0.06);
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.clay-button {
+  border-radius: 9999px;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 
+    0 6px 14px -2px rgba(150, 130, 165, 0.22),
+    inset 0 2px 3px rgba(255, 255, 255, 0.65),
+    inset 0 -3px 4px rgba(0, 0, 0, 0.12);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.clay-button:active {
+  transform: translateY(2px) scale(0.97);
+  box-shadow: 
+    0 2px 6px -1px rgba(150, 130, 165, 0.2),
+    inset 0 1px 2px rgba(255, 255, 255, 0.4),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.15);
+}
+
+.clay-badge {
+  border-radius: 1.25rem;
+  box-shadow: 
+    0 4px 10px -2px rgba(150, 130, 165, 0.15),
+    inset 0 1.5px 3px rgba(255, 255, 255, 0.8),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.7);
+}
+
+.clay-inset {
+  border-radius: 1.25rem;
+  box-shadow: 
+    inset 0 3px 8px rgba(140, 120, 155, 0.16),
+    inset 0 1px 3px rgba(140, 120, 155, 0.1),
+    0 1px 2px rgba(255, 255, 255, 0.9);
+  background: rgba(245, 240, 248, 0.7);
+}
+
+/* Qui est-ce ? Flap Frame Styling */
+.guess-who-frame {
+  position: relative;
+  border-radius: 1.25rem;
+  padding: 8px 8px 12px 8px;
+  background: linear-gradient(180deg, #5b9bf8 0%, #3b7edb 100%);
+  box-shadow: 
+    0 8px 18px -3px rgba(59, 126, 219, 0.35),
+    inset 0 2px 4px rgba(255, 255, 255, 0.6),
+    inset 0 -3px 5px rgba(0, 0, 0, 0.2);
+  border: 2.5px solid rgba(255, 255, 255, 0.7);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.guess-who-frame-red {
+  background: linear-gradient(180deg, #ff7675 0%, #e84141 100%);
+  box-shadow: 
+    0 8px 18px -3px rgba(232, 65, 65, 0.35),
+    inset 0 2px 4px rgba(255, 255, 255, 0.6),
+    inset 0 -3px 5px rgba(0, 0, 0, 0.2);
+}
+
+.guess-who-frame-yellow {
+  background: linear-gradient(180deg, #fed330 0%, #f7b731 100%);
+  box-shadow: 
+    0 8px 18px -3px rgba(247, 183, 49, 0.35),
+    inset 0 2px 4px rgba(255, 255, 255, 0.6),
+    inset 0 -3px 5px rgba(0, 0, 0, 0.2);
+}
+
+.guess-who-frame-green {
+  background: linear-gradient(180deg, #55efc4 0%, #00b894 100%);
+  box-shadow: 
+    0 8px 18px -3px rgba(0, 184, 148, 0.35),
+    inset 0 2px 4px rgba(255, 255, 255, 0.6),
+    inset 0 -3px 5px rgba(0, 0, 0, 0.2);
+}
+
+.guess-who-card-inner {
+  background: #ffffff;
+  border-radius: 0.85rem;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+/* Pulsing and smooth animations */
+@keyframes floatGentle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.animate-float {
+  animation: floatGentle 3s ease-in-out infinite;
+}
