@@ -240,14 +240,20 @@ export const evaluateDrawnShape = (
     };
   }
 
-  // 1. Evaluate Precision: continuous distance decay for aligned strokes, penalty for misaligned/out-of-bounds
+  // 1. Evaluate Precision (User -> Target):
+  //    For each user point, find its closest aligned target point:
+  //    - d <= 4px (align >= 0.85): 1.0 (right on the line)
+  //    - 4 < d <= 15px (align >= 0.85): 1.0 -> 0.55 (close to the line)
+  //    - 15 < d <= 28px (align >= 0.92, strictly parallel <= 23°): 0.55 -> 0.10 (parallel shifted edge, e.g. triangle base drawn 22px lower)
+  //    - Otherwise: negative penalty for wrong angle or out-of-bounds (> 28px)
   let precisionSum = 0;
   let penaltyPoints = 0;
 
   for (let i = 0; i < userPoints.length; i++) {
     const up = userPoints[i];
     let rawMinDist = Infinity;
-    let alignedMinDist = Infinity;
+    let closeAlignedDist = Infinity;
+    let parallelShiftedDist = Infinity;
 
     for (let j = 0; j < targetPoints.length; j++) {
       const tp = targetPoints[j];
@@ -256,83 +262,99 @@ export const evaluateDrawnShape = (
         rawMinDist = d;
       }
       const align = Math.abs(up.ux * tp.ux + up.uy * tp.uy);
-      // Within ~35° of the target segment direction (cos 35° ≈ 0.82)
-      if (align >= 0.82 && d < alignedMinDist) {
-        alignedMinDist = d;
+      if (align >= 0.85 && d < closeAlignedDist) {
+        closeAlignedDist = d;
+      }
+      if (align >= 0.92 && d < parallelShiftedDist) {
+        parallelShiftedDist = d;
       }
     }
 
-    if (alignedMinDist <= 2.5) {
+    if (closeAlignedDist <= 4) {
       precisionSum += 1.0;
-    } else if (alignedMinDist <= 18) {
-      // Smooth decay from 1.0 (at 2.5px) down to 0.0 (at 18px)
-      precisionSum += 1.0 - (alignedMinDist - 2.5) / 15.5;
+    } else if (closeAlignedDist <= 15) {
+      precisionSum += 1.0 - ((closeAlignedDist - 4) / 11) * 0.45;
+    } else if (parallelShiftedDist <= 28 && parallelShiftedDist <= rawMinDist + 4) {
+      // Parallel edge shifted by 15..28px (e.g. bottom of triangle drawn slightly lower)
+      precisionSum += 0.55 - ((parallelShiftedDist - 15) / 13) * 0.45;
     } else if (rawMinDist <= 18) {
-      // Close to a line, but cutting across it at > 35° (e.g. circle crossing star spikes)
-      precisionSum -= 0.4;
+      // Close to a target line, but cutting across it at the wrong angle (> 31°, e.g. circle on star)
+      precisionSum -= 0.5;
+      penaltyPoints += 0.5;
     } else {
-      // Out of bounds (> 18px): progressive penalty up to -1.2
-      const pen = Math.min(1.2, (rawMinDist - 18) / 14);
+      // Out of bounds (> 28px or unaligned > 18px)
+      const pen = Math.min(1.1, (rawMinDist - 18) / 16);
       precisionSum -= pen;
-      if (rawMinDist > 24) {
-        penaltyPoints++;
+      if (rawMinDist > 28) {
+        penaltyPoints += 1;
       }
     }
   }
 
   const precisionRatio = Math.max(0, Math.min(1, precisionSum / userPoints.length));
 
-  // 2. Evaluate Coverage: continuous decay for each target point covered in the right direction
+  // 2. Evaluate Coverage (Target -> User):
+  //    For each target point, check distance to closest aligned user point
   let coveredWeight = 0;
   let strictCoveredCount = 0;
 
   for (let j = 0; j < targetPoints.length; j++) {
     const tp = targetPoints[j];
-    let bestAlignedDist = Infinity;
+    let bestCloseDist = Infinity;
+    let bestParallelDist = Infinity;
 
     for (let i = 0; i < userPoints.length; i++) {
       const up = userPoints[i];
       const align = Math.abs(up.ux * tp.ux + up.uy * tp.uy);
-      if (align >= 0.82) {
+      if (align >= 0.85) {
         const d = Math.hypot(up.x - tp.x, up.y - tp.y);
-        if (d < bestAlignedDist) {
-          bestAlignedDist = d;
+        if (d < bestCloseDist) {
+          bestCloseDist = d;
+        }
+        if (align >= 0.92 && d < bestParallelDist) {
+          bestParallelDist = d;
         }
       }
     }
 
-    if (bestAlignedDist <= 2.5) {
+    if (bestCloseDist <= 4) {
       coveredWeight += 1.0;
       strictCoveredCount += 1.0;
-    } else if (bestAlignedDist <= 16) {
-      const w = 1.0 - (bestAlignedDist - 2.5) / 13.5;
+    } else if (bestCloseDist <= 15) {
+      const w = 1.0 - ((bestCloseDist - 4) / 11) * 0.45;
       coveredWeight += w;
-      if (bestAlignedDist <= 9) {
-        strictCoveredCount += 1.0;
-      }
+      strictCoveredCount += bestCloseDist <= 10 ? 1.0 : 0.5;
+    } else if (bestParallelDist <= 28) {
+      const w = 0.55 - ((bestParallelDist - 15) / 13) * 0.45;
+      coveredWeight += w;
+      strictCoveredCount += 0.35;
     }
   }
 
   const coverageRatio = coveredWeight / targetPoints.length;
-  const strictCoveragePercentage = Math.round((strictCoveredCount / targetPoints.length) * 100);
+  const displayCoveragePercentage = Math.round((strictCoveredCount / targetPoints.length) * 100);
 
   // 3. Overdraw check (prevent drawing multiple passes to fish for coverage)
   const lengthRatio = userPoints.length / targetPoints.length;
   const overdrawFactor =
     lengthRatio > 1.3 ? Math.max(0, 1 - (lengthRatio - 1.3) * 0.9) : 1;
 
-  // 4. Final Multiplicative Score (Précision × Couverture) with Strict Minimum Floor
+  // 4. Final Score using F1 Harmonic Mean (2*P*C / (P+C)) with strict cutoff for wrong shapes
   let finalPercentage = 0;
 
-  // Hard floor: if effective coverage < 22% or strict coverage < 20% or precision <= 12%, score is 0%!
-  if (coverageRatio >= 0.22 && strictCoveragePercentage >= 20 && precisionRatio > 0.12) {
-    const rawProduct = precisionRatio * coverageRatio;
-    finalPercentage = Math.round(Math.min(99, Math.max(0, rawProduct * overdrawFactor * 100)));
+  if (coverageRatio >= 0.28 && displayCoveragePercentage >= 25 && precisionRatio >= 0.22) {
+    const f1Score = (2 * precisionRatio * coverageRatio) / (precisionRatio + coverageRatio);
+    const completenessRamp = coverageRatio < 0.55 ? (coverageRatio - 0.22) / 0.33 : 1.0;
+    finalPercentage = Math.round(
+      Math.min(99, Math.max(0, f1Score * completenessRamp * overdrawFactor * 100))
+    );
   }
 
-  // If more than 30% of user stroke is out-of-bounds (> 24px), penalize
-  if (penaltyPoints > userPoints.length * 0.3) {
-    finalPercentage = Math.round(finalPercentage * 0.5);
+  // Proportional out-of-bounds penalty (smoothly reduces score when > 15% of stroke is > 28px out-of-bounds)
+  const penaltyRatio = penaltyPoints / userPoints.length;
+  if (penaltyRatio > 0.15) {
+    const penaltyMultiplier = Math.max(0.15, 1 - (penaltyRatio - 0.15) * 1.6);
+    finalPercentage = Math.round(finalPercentage * penaltyMultiplier);
   }
 
   let feedback = 'Pas mal !';
@@ -346,8 +368,8 @@ export const evaluateDrawnShape = (
   return {
     accuracyPercentage: finalPercentage,
     shapeScore: Math.round(precisionRatio * 100),
-    coverageScore: strictCoveragePercentage,
-    penaltyPixels: penaltyPoints,
+    coverageScore: displayCoveragePercentage,
+    penaltyPixels: Math.round(penaltyPoints),
     feedback,
   };
 };
