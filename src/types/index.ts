@@ -1,4 +1,4 @@
-export type GameId = 'chrono' | 'trace' | 'rhythm';
+export type GameId = 'chrono' | 'trace' | 'rhythm' | 'target';
 
 export type FrameColor = 'blue' | 'red' | 'yellow' | 'green' | 'purple';
 
@@ -23,7 +23,7 @@ export interface MiniGameMeta {
   subtitle: string;
   description: string;
   badge: string;
-  iconName: 'timer' | 'shapes' | 'drum';
+  iconName: 'timer' | 'shapes' | 'drum' | 'target';
   minPlayers: number;
   maxPlayers: number;
   bgGradient: string;

@@ -37,6 +37,18 @@ export const MINI_GAMES: MiniGameMeta[] = [
     bgGradient: 'from-teal-100 via-emerald-50 to-cyan-50',
     accentColor: '#10b981',
   },
+  {
+    id: 'target',
+    title: 'Cible Fantôme',
+    subtitle: 'Visez la cible dans le brouillard !',
+    description: 'Mémorisez la position de la cible et des obstacles pendant 4 secondes, puis propulsez votre palet à l\'aveugle !',
+    badge: '🎯 Tir à l\'aveugle',
+    iconName: 'target',
+    minPlayers: 1,
+    maxPlayers: 8,
+    bgGradient: 'from-sky-100 via-indigo-50 to-blue-50',
+    accentColor: '#3b82f6',
+  },
 ];
 
 export const getGameById = (id: string): MiniGameMeta => {

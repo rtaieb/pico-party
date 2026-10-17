@@ -1,7 +1,7 @@
 import React from 'react';
 import type { GameId } from '../../types';
 import { MINI_GAMES } from '../../data/games';
-import { Timer, Shapes, Drum, Sparkles, Users, Lock, ChevronRight } from 'lucide-react';
+import { Timer, Shapes, Drum, Target, Sparkles, Users, Lock, ChevronRight } from 'lucide-react';
 import { sound } from '../../utils/sound';
 
 interface GameCatalogScreenProps {
@@ -41,6 +41,7 @@ export const GameCatalogScreen: React.FC<GameCatalogScreenProps> = ({
         {MINI_GAMES.map((game) => {
           const isChrono = game.id === 'chrono';
           const isRhythm = game.id === 'rhythm';
+          const isTarget = game.id === 'target';
 
           return (
             <div
@@ -58,6 +59,8 @@ export const GameCatalogScreen: React.FC<GameCatalogScreenProps> = ({
                     ? 'bg-amber-300'
                     : isRhythm
                     ? 'bg-teal-300'
+                    : isTarget
+                    ? 'bg-sky-300'
                     : 'bg-purple-300'
                 }`}
               />
@@ -70,6 +73,8 @@ export const GameCatalogScreen: React.FC<GameCatalogScreenProps> = ({
                       ? 'bg-gradient-to-tr from-amber-400 to-yellow-300 text-slate-900 shadow-amber-300/40'
                       : isRhythm
                       ? 'bg-gradient-to-tr from-teal-500 to-emerald-400 text-white shadow-teal-300/40'
+                      : isTarget
+                      ? 'bg-gradient-to-tr from-sky-500 to-indigo-400 text-white shadow-sky-300/40'
                       : 'bg-gradient-to-tr from-purple-500 to-pink-400 text-white shadow-purple-300/40'
                   }`}
                 >
@@ -77,6 +82,8 @@ export const GameCatalogScreen: React.FC<GameCatalogScreenProps> = ({
                     <Timer className="w-8 h-8 stroke-[2.2]" />
                   ) : isRhythm ? (
                     <Drum className="w-8 h-8 stroke-[2.2]" />
+                  ) : isTarget ? (
+                    <Target className="w-8 h-8 stroke-[2.2]" />
                   ) : (
                     <Shapes className="w-8 h-8 stroke-[2.2]" />
                   )}

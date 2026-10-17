@@ -6,6 +6,7 @@ import { PlayerSelectScreen } from './components/players/PlayerSelectScreen';
 import { ChronoGame } from './components/games/chrono/ChronoGame';
 import { TraceGame } from './components/games/trace/TraceGame';
 import { RhythmGame } from './components/games/rhythm/RhythmGame';
+import { TargetGame } from './components/games/target/TargetGame';
 import { PodiumScreen } from './components/games/PodiumScreen';
 import {
   getStoredPlayers,
@@ -213,6 +214,14 @@ export const App: React.FC = () => {
 
               {screenState.gameId === 'rhythm' && (
                 <RhythmGame
+                  players={activeGamePlayers}
+                  onFinish={handleFinishGame}
+                  onExit={handleBack}
+                />
+              )}
+
+              {screenState.gameId === 'target' && (
+                <TargetGame
                   players={activeGamePlayers}
                   onFinish={handleFinishGame}
                   onExit={handleBack}
